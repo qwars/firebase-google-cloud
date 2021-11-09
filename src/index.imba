@@ -35,6 +35,9 @@ Object.defineProperty firebase:firestore:CollectionReference:prototype, 'destroy
 		if this:firestore:app:__unsubscribe__.has this:path then this:firestore:app:__unsubscribe__.get( this:path )()
 		if this:firestore:app:__response__.has this:path then this:firestore:app:__response__.delete this:path
 
+Object.defineProperty firebase:firestore:CollectionReference:prototype, 'filters',
+	value: do Map.new this:_delegate:_query:filters.map do|item| [ item:field:segments[0], item ]
+
 # --- Query ---
 
 Object.defineProperty firebase:firestore:Query:prototype, 'response',
@@ -48,7 +51,7 @@ Object.defineProperty firebase:firestore:Query:prototype, 'destroy',
 		if this:firestore:app:__response__.has this:path then this:firestore:app:__response__.delete this:path
 
 Object.defineProperty firebase:firestore:Query:prototype, 'filters',
-	value: do Map.new this:_delegate:_query:filters.map do|item| [ item ]
+	value: do Map.new this:_delegate:_query:filters.map do|item| [ item:field:segments[0], item ]
 
 
 # --- Firestore:functions ---
@@ -69,13 +72,6 @@ Object.defineProperty firebase:firestore:Firestore:prototype, 'destroy',
 	value: do for item in this:app:__unsubscribe__.keys
 		this:app:__unsubscribe__.get( item )()
 		this:app:__response__.delete( item )
-
-
-export class Segment
-	prop waiting
-
-	def initialize
-		collection = $1
 
 export def destroy server
 	if firebase:apps.filter( do |item| item:name == server ):length == 0 then Promise.new do|resolve, reject| resolve()
